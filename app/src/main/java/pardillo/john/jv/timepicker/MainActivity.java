@@ -15,7 +15,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, TimePicker.OnTimeChangedListener {
 
     private TimePicker timePicked;
-    String hr, min;
+    private String hr, min;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,22 +24,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         this.timePicked = this.findViewById(R.id.timePicker);
         this.findViewById(R.id.button).setOnClickListener(this);
-
         this.timePicked.setOnTimeChangedListener(this);
+        this.timePicked.setIs24HourView(true);
 
         hr = new SimpleDateFormat("hh", Locale.getDefault()).format(new Date());
         min = new SimpleDateFormat("mm", Locale.getDefault()).format(new Date());
-        Toast.makeText(this, hr +":"+ min, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(this, hr +":"+ min, Toast.LENGTH_LONG).show();
+        String time = toRegularTime(Integer.parseInt(hr), Integer.parseInt(min));
+        Toast.makeText(this, "Time: " +time, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
         hr = "" + hourOfDay;
         min = "" + minute;
+    }
+
+    private String toRegularTime(int hour, int min) {
+        String format;
+        if(hour == 0) {
+            hour += 12;
+            format = "AM";
+        } else if(hour == 12) {
+            format = "PM";
+        } else if(hour > 12) {
+            hour -= 12;
+            format = "PM";
+        } else {
+            format = "AM";
+        }
+
+        return ((hour<10)?"0"+hour:""+hour) +":"+ ((min<10)?"0"+min:""+min) +" "+ format;
     }
 }
